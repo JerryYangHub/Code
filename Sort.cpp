@@ -15,13 +15,17 @@ public:
 	static void MergeSort(vector<int> &a);
 	//快速排序
 	static void QuickSort(vector<int> &a);
+	//堆排序
+	static void HeapSort(vector<int> &a);
 private:
 	//合并有序数组
 	static void MergeArray(vector<int> &a,int left,int middle,int right);
+	//归并排序的 递归函数
 	static void mergesort(vector<int> &a,int left,int right);
+	//快排的递归函数
 	static void qiucksort(vector<int> &a,int left,int right);
-
-
+	//堆的向下修正函数
+	static void heapfixdown(vector<int> &a,int start,int max);
 
 };
 
@@ -38,8 +42,9 @@ void CSort::print(const vector<int> &a)
 //优化思路 设立标志 记录上一次调换的最后位置作为下一次循环的结束位置
 void CSort::BubbleSort(vector<int> &a)
 {
-	int end,flag;
+	if (a.size() == 0) return;
 
+	int end,flag;
 	flag = a.size();
 	while (flag > 0)
 	{
@@ -60,6 +65,8 @@ void CSort::BubbleSort(vector<int> &a)
 //在排好序的序列中从后向前插入并移动
 void CSort::InsertSort(vector<int> &a)
 {
+	if (a.size() == 0) return;
+
 	for (int i = 1;i < a.size();i++)
 	{
 		for (int j = i-1;j >= 0 && a[j] > a[j+1];j--)
@@ -72,6 +79,8 @@ void CSort::InsertSort(vector<int> &a)
 //希尔排序 等间隔排序 再缩短间隔
 void CSort::ShellSort(vector<int> &a)
 {
+	if (a.size() == 0) return;
+
 	for (int gap = a.size()/2;gap > 0;gap /= 2)//缩小间隔
 	{
 		for (int i = gap;i < a.size();i++)
@@ -83,9 +92,12 @@ void CSort::ShellSort(vector<int> &a)
 		}
 	}
 }
+
 //选择排序 每一次循环选择最小的放到没有固定位置的最左侧
 void CSort::SelectSort(vector<int> &a)
 {
+	if (a.size() == 0) return;
+
 	for (int i = 0;i < a.size();i++)
 	{
 		int k = i;
@@ -99,18 +111,17 @@ void CSort::SelectSort(vector<int> &a)
 
 //归并排序 一个数组分成两个数组 对两个数组分别排序 再合并 
 //分成的两个数组又可以再分（递归）
-
 void CSort::MergeSort(vector<int> &a)
 {
+	if (a.size() == 0) return;
+
 	mergesort(a,0,a.size()-1);
 }
+
+//合并
 //一个数组的左半侧[left,middle]和右半侧[middle+1,right]分别是有序的，合并得到一个有序的数组
 void CSort::MergeArray(vector<int> &a,int left,int middle,int right)
 {
-	if(right == 2)
-	{
-
-	}
 	vector<int> t(right-left+1);
 	int i = left,j = middle+1,k = 0;
 	while(i <= middle && j <= right)//都还要数据时
@@ -124,9 +135,11 @@ void CSort::MergeArray(vector<int> &a,int left,int middle,int right)
 
 	for (i = left;i <= right;i++) a[i] = t[i-left];
 }
+
 //归并的递归函数
 void CSort::mergesort(vector<int> &a,int left,int right)
 {
+	if (a.size() == 0) return;
 
 	if (left < right)
 	{
@@ -138,9 +151,12 @@ void CSort::mergesort(vector<int> &a,int left,int right)
 	}
 
 }
+
 //快速排序 任意一个数 定位 在分别排它左侧的 和 右侧的
 void CSort::QuickSort(vector<int> &a)
 {
+	if (a.size() == 0) return;
+
 	qiucksort(a,0,a.size()-1);
 }
 
@@ -165,4 +181,49 @@ void CSort::qiucksort(vector<int> &a,int left,int right)
 		qiucksort(a, i + 1, right);  
 	}  
 
+}
+
+//堆排序 堆化数组思想
+void CSort::HeapSort(vector<int> &a)
+{
+	if (a.size() == 0) return;
+	//堆化数组
+	for (int i = a.size() / 2 - 1; i >= 0; i--)  
+	{
+		heapfixdown(a,i,a.size());
+	}
+	//每次把第一个（目前最小值）放到后面，再向下修复
+	for (int i = a.size() - 1;i >= 1;i--)
+	{
+		swap(a[i],a[0]);
+		heapfixdown(a,0,i);
+	}
+	for(int i = 0;i < a.size()/2;i++)
+	{
+		swap(a[i],a[a.size() - 1 - i]);
+	}
+}
+
+//向下调整堆
+void CSort::heapfixdown(vector<int> &a,int start,int max)
+{
+	int j, temp;  
+
+	temp = a[start];  
+	j = 2 * start + 1;  
+	while (j < max)  
+	{  
+		//在左右孩子中找最小的  
+		if (j + 1 < max && a[j + 1] < a[j]) 
+			j++;  
+
+		if (a[j] >= temp)  
+			break;  
+
+		//把较小的子结点往上移动,替换它的父结点
+		a[start] = a[j];       
+		start = j;  
+		j = 2 *start + 1;  
+	}  
+	a[start] = temp;  
 }
