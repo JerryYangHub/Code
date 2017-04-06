@@ -8,19 +8,34 @@ struct SBinaryTreeNode
 class CBinaryTree
 {
 public:
+	//求节点数
 	int GetNodeNum(SBinaryTreeNode *pRoot);
+	//求叶子数
 	int GetLeafNum(SBinaryTreeNode *pRoot);
+	//求深度
 	int GetDepth(SBinaryTreeNode *pRoot);
-	
+	//先序
 	void PreOrder(SBinaryTreeNode *pRoot);
 	void PreOrderNon(SBinaryTreeNode *pRoot);
-
+	//中序
 	void InOrder(SBinaryTreeNode *pRoot);
 	void InOrderNon(SBinaryTreeNode *pRoot);
-
+	//后序
 	void PostOrder(SBinaryTreeNode *pRoot);
 	void PostOrderNon(SBinaryTreeNode *pRoot);
+	//层序
 	void LevelOrder(SBinaryTreeNode *pRoot);
+
+	//求第k层的节点数
+	int GetKLevelNum(SBinaryTreeNode *pRoot,int k);
+	//判断两个二叉树是否同构
+	bool isSameStruct(SBinaryTreeNode *pRoot1,SBinaryTreeNode *pRoot2);
+	//镜像二叉树
+	void MirrorBinaryTree(SBinaryTreeNode *pRoot);
+	//最低公共祖先
+	SBinaryTreeNode * LowestCommonAncestor(SBinaryTreeNode *pRoot,
+											SBinaryTreeNode *Node1,
+											SBinaryTreeNode *Node2);
 };
 
 //节点数
@@ -162,6 +177,7 @@ void CBinaryTree::PostOrderNon(SBinaryTreeNode *pRoot)
 }
 
 //层次遍历
+
 void CBinaryTree::LevelOrder(SBinaryTreeNode *pRoot)
 {
 	if (pRoot)
@@ -181,4 +197,46 @@ void CBinaryTree::LevelOrder(SBinaryTreeNode *pRoot)
 				Q.push(p->right);
 		}
 	}
+}
+
+//求第K层节点数
+int CBinaryTree::GetKLevelNum(SBinaryTreeNode *pRoot,int k)
+{
+	if (pRoot == NULL || k < 1) return 0;
+	if (k == 1) return 1;
+	return GetKLevelNum(pRoot->left,k-1) + GetKLevelNum(pRoot->right,k-1);
+}
+
+//同构判断（仅判断结构，每个位置的值可以不同）
+bool CBinaryTree::isSameStruct(SBinaryTreeNode *pRoot1,SBinaryTreeNode *pRoot2)
+{
+	if (pRoot1 == NULL && pRoot2 == NULL) return true;
+	if (pRoot1 == NULL || pRoot2 == NULL) return false;
+
+	return isSameStruct(pRoot1->left,pRoot2->left) && isSameStruct(pRoot1->right,pRoot2->right);
+}
+
+//镜像
+void CBinaryTree::MirrorBinaryTree(SBinaryTreeNode *pRoot)
+{
+	if (pRoot != NULL)
+	{
+		swap(pRoot->left,pRoot->right);
+		MirrorBinaryTree(pRoot->left);
+		MirrorBinaryTree(pRoot->right);
+	}
+}
+
+//最低公共祖先
+SBinaryTreeNode * CBinaryTree::LowestCommonAncestor(SBinaryTreeNode *pRoot, SBinaryTreeNode *Node1, SBinaryTreeNode *Node2)
+{
+	if (pRoot == NULL)
+		return NULL;
+	if (pRoot == Node1 || pRoot == Node2)
+		return pRoot;
+	SBinaryTreeNode * left = LowestCommonAncestor(pRoot->left, Node1, Node2);
+	SBinaryTreeNode * right = LowestCommonAncestor(pRoot->right, Node1, Node2);
+	if (left && right)
+		return pRoot;
+	return left ? left : right;
 }
